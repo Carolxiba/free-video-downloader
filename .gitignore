@@ -1,0 +1,23 @@
+# 前端依赖与构建产物
+frontend/node_modules/
+frontend/dist/
+frontend/playwright-report/
+frontend/test-results/
+
+# Python 虚拟环境与缓存
+backend/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+*.pyc
+
+# 本地运行环境与临时下载文件
+.tools/
+.runtime/
+
+# 编辑器与系统文件
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+

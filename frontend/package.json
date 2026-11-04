@@ -1,0 +1,38 @@
+{
+  "name": "shizhen-video-downloader",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@fontsource-variable/noto-sans-sc": "^5.3.1",
+    "@lucide/vue": "^1.68.0",
+    "vue": "^3.5.44"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^24.10.0",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "@vue/test-utils": "2.4.11",
+    "jsdom": "^29.1.1",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.5",
+    "vitest": "^5.1.0",
+    "vue-tsc": "^3.3.14"
+  },
+  "overrides": {
+    "editorconfig": "3.0.2",
+    "glob": "14.0.3",
+    "js-beautify": "2.0.3",
+    "minimatch": "11.0.4",
+    "nopt": "9.0.0"
+  }
+}
+
