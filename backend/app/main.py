@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from .ai_summary.router import install_ai_summary
 from .config import Settings
 from .jobs import JobManager
 from .models import (
@@ -87,6 +88,7 @@ def create_app(
         allow_methods=["GET", "POST", "DELETE"],
         allow_headers=["Content-Type"],
     )
+    install_ai_summary(app, active_settings)
 
     @app.get("/api/health", response_model=HealthView)
     async def health() -> HealthView:
@@ -182,4 +184,3 @@ def _media_type(path: Path) -> str:
 
 
 app = create_app()
-

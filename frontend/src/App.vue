@@ -31,6 +31,7 @@ import {
   normalizeVideoUrl,
 } from './formatters'
 import type { DownloadJob, Preset, VideoInfo, ViewPhase } from './types'
+import VideoSummaryLauncher from './components/VideoSummaryLauncher.vue'
 
 const url = ref('')
 const phase = ref<ViewPhase>('idle')
@@ -368,6 +369,7 @@ onBeforeUnmount(() => {
                     <p>{{ video.uploader || '作者未知' }}</p>
                   </div>
                 </div>
+                <VideoSummaryLauncher :video="video" />
 
                 <div v-if="phase === 'inspected'" class="quality-block">
                   <div class="block-label">
@@ -500,4 +502,3 @@ onBeforeUnmount(() => {
     </footer>
   </div>
 </template>
-

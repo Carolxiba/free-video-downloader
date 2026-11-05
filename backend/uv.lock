@@ -429,6 +429,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "httpx" },
     { name = "pydantic" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "yt-dlp", extra = ["default"] },
@@ -444,6 +445,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = "==0.115.14" },
+    { name = "httpx", specifier = "==0.28.1" },
     { name = "pydantic", specifier = "==2.11.7" },
     { name = "uvicorn", extras = ["standard"], specifier = "==0.34.3" },
     { name = "yt-dlp", extras = ["default"], specifier = "==2026.10.26" },
