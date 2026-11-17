@@ -77,9 +77,18 @@ def wait_for_status(client: TestClient, job_id: str, status: str) -> dict:
     raise AssertionError(f"任务未进入 {status} 状态")
 
 
+def register_user(client: TestClient, username: str = "api_reader") -> None:
+    response = client.post(
+        "/api/auth/register",
+        json={"username": username, "password": "safe-pass-123"},
+    )
+    assert response.status_code == 201
+
+
 def test_inspect_download_and_file(settings: Settings) -> None:
     app = create_app(settings=settings, runner=FakeRunner())
     with TestClient(app) as client:
+        register_user(client)
         inspect = client.post(
             "/api/inspect",
             json={"url": "https://8.8.8.8/video"},
@@ -104,6 +113,7 @@ def test_inspect_download_and_file(settings: Settings) -> None:
 def test_download_requires_prior_inspection(settings: Settings) -> None:
     app = create_app(settings=settings, runner=FakeRunner())
     with TestClient(app) as client:
+        register_user(client)
         response = client.post(
             "/api/downloads",
             json={"url": "https://8.8.8.8/video", "preset": "best"},
@@ -117,6 +127,7 @@ def test_inspect_maps_upstream_error(settings: Settings) -> None:
     runner.inspect_error = YtDlpError("UNSUPPORTED_URL", "暂不支持这个视频链接")
     app = create_app(settings=settings, runner=runner)
     with TestClient(app) as client:
+        register_user(client)
         response = client.post(
             "/api/inspect",
             json={"url": "https://8.8.8.8/video"},
@@ -131,6 +142,7 @@ def test_inspect_maps_upstream_error(settings: Settings) -> None:
 def test_inspect_rate_limit(settings: Settings) -> None:
     app = create_app(settings=settings, runner=FakeRunner())
     with TestClient(app) as client:
+        register_user(client)
         for _ in range(5):
             assert (
                 client.post(
@@ -150,6 +162,7 @@ def test_inspect_rate_limit(settings: Settings) -> None:
 def test_missing_job_returns_404(settings: Settings) -> None:
     app = create_app(settings=settings, runner=FakeRunner())
     with TestClient(app) as client:
+        register_user(client)
         assert client.get("/api/downloads/not-found").status_code == 404
 
 

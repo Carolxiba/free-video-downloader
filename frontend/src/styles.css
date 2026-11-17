@@ -192,6 +192,66 @@ summary:focus-visible {
   box-shadow: 0 0 0 4px rgb(29 113 84 / 10%);
 }
 
+.user-session {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.user-avatar {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), #60a5fa);
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 5px 14px rgb(37 99 235 / 20%);
+}
+
+.user-copy {
+  min-width: 0;
+  display: grid;
+  line-height: 1.25;
+}
+
+.user-copy small {
+  color: var(--muted);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
+.user-copy strong {
+  max-width: 150px;
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-session button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: white;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.user-session button:hover {
+  border-color: #f0b8a7;
+  background: var(--orange-soft);
+  color: var(--danger);
+}
+
 .hero {
   width: min(1200px, calc(100% - 48px));
   min-height: 0;
@@ -1485,7 +1545,8 @@ summary:focus-visible {
   }
 
   .brand-beta,
-  .free-pill {
+  .free-pill,
+  .user-copy {
     display: none;
   }
 

@@ -16,6 +16,9 @@ async function summaryRequest<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   if (!response.ok) {
+    if (response.status === 401) {
+      window.dispatchEvent(new Event('shizhen:auth-required'))
+    }
     const payload = await response.json().catch(() => null)
     const detail = payload?.detail
     const message =

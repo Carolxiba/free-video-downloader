@@ -29,6 +29,7 @@ TERMINAL_STATUSES = {
 class SummaryJob:
     job_id: str
     url: str
+    user_id: str
     directory: Path
     created_at: float
     expires_at: float
@@ -72,7 +73,7 @@ class SummaryManager:
         self._semaphore = asyncio.Semaphore(config.concurrency)
         self._cleanup_task: asyncio.Task[None] | None = None
 
-    async def create(self, url: str) -> SummaryJobView:
+    async def create(self, url: str, user_id: str = "anonymous") -> SummaryJobView:
         self._ensure_cleanup_loop()
         await self.cleanup_expired()
         now = time.time()
@@ -80,6 +81,7 @@ class SummaryManager:
         job = SummaryJob(
             job_id=job_id,
             url=url,
+            user_id=user_id,
             directory=self.config.root / job_id,
             created_at=now,
             expires_at=now + self.config.job_ttl_seconds,
@@ -89,10 +91,10 @@ class SummaryManager:
         job.task = asyncio.create_task(self._run(job), name=f"ai-summary-{job_id}")
         return job.to_view()
 
-    async def get(self, job_id: str) -> SummaryJob | None:
+    async def get(self, job_id: str, user_id: str | None = None) -> SummaryJob | None:
         async with self._lock:
             job = self._jobs.get(job_id)
-            if job is None:
+            if job is None or (user_id is not None and job.user_id != user_id):
                 return None
             if job.status not in TERMINAL_STATUSES and job.expires_at <= time.time():
                 await self._cancel_record(job)
@@ -102,11 +104,11 @@ class SummaryManager:
                 job.error = "摘要任务已过期，请重新生成"
             return job
 
-    async def cancel(self, job_id: str) -> SummaryJob | None:
+    async def cancel(self, job_id: str, user_id: str | None = None) -> SummaryJob | None:
         await self.cleanup_expired()
         async with self._lock:
             job = self._jobs.get(job_id)
-            if job is None:
+            if job is None or (user_id is not None and job.user_id != user_id):
                 return None
             if job.status not in TERMINAL_STATUSES:
                 await self._cancel_record(job)

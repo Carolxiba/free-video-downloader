@@ -5,10 +5,19 @@ from fastapi.testclient import TestClient
 from app.main import create_app
 
 
+def register_user(client: TestClient) -> None:
+    response = client.post(
+        "/api/auth/register",
+        json={"username": "summary_reader", "password": "safe-pass-123"},
+    )
+    assert response.status_code == 201
+
+
 def test_ai_summary_capabilities_do_not_expose_key(settings, monkeypatch) -> None:
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     app = create_app(settings=settings)
     with TestClient(app) as client:
+        register_user(client)
         response = client.get("/api/ai-summaries/capabilities")
     assert response.status_code == 200
     assert response.json()["configured"] is False
@@ -19,6 +28,7 @@ def test_ai_summary_returns_clear_error_when_unconfigured(settings, monkeypatch)
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     app = create_app(settings=settings)
     with TestClient(app) as client:
+        register_user(client)
         response = client.post(
             "/api/ai-summaries",
             json={"url": "https://8.8.8.8/video"},
@@ -31,6 +41,7 @@ def test_ai_summary_rejects_private_url(settings, monkeypatch) -> None:
     monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
     app = create_app(settings=settings)
     with TestClient(app) as client:
+        register_user(client)
         response = client.post(
             "/api/ai-summaries",
             json={"url": "http://127.0.0.1/video"},
@@ -42,6 +53,7 @@ def test_ai_summary_rejects_private_url(settings, monkeypatch) -> None:
 def test_ai_summary_missing_job_returns_404(settings) -> None:
     app = create_app(settings=settings)
     with TestClient(app) as client:
+        register_user(client)
         response = client.get("/api/ai-summaries/not-found")
     assert response.status_code == 404
     assert response.json()["detail"]["code"] == "SUMMARY_NOT_FOUND"

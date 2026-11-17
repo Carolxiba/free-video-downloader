@@ -1,8 +1,10 @@
 import { expect, test } from '@playwright/test'
 import { mkdir } from 'node:fs/promises'
+import { mockAuthenticatedUser } from './auth-helper'
 
 test('保存桌面与平板视觉验收截图', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium')
+  await mockAuthenticatedUser(page)
   await mkdir('../docs/screenshots', { recursive: true })
 
   for (const viewport of [
@@ -28,6 +30,7 @@ test('保存桌面与平板视觉验收截图', async ({ page }, testInfo) => {
 
 test('保存手机视觉验收截图', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile-chromium')
+  await mockAuthenticatedUser(page)
   await mkdir('../docs/screenshots', { recursive: true })
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')

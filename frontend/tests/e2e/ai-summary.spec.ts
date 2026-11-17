@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { mockAuthenticatedUser } from './auth-helper'
 
 const publicVideo = 'https://www.youtube.com/watch?v=test-video'
 
@@ -36,6 +37,7 @@ const summaryJob = {
 }
 
 async function mockSummaryApis(page: import('@playwright/test').Page) {
+  await mockAuthenticatedUser(page)
   await page.route('**/api/ai-summaries/capabilities', (route) =>
     route.fulfill({
       status: 200,

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { stat } from 'node:fs/promises'
+import { registerWithRealBackend } from './auth-helper'
 
 const douyinVideo = 'https://www.douyin.com/video/6961737553342991651'
 
@@ -10,7 +11,7 @@ test('抖音公开视频无需用户 Cookie 即可解析和下载', async ({ pag
     '仅在显式开启抖音公网测试时运行',
   )
 
-  await page.goto('/')
+  await registerWithRealBackend(page)
   await page.getByRole('textbox', { name: '视频链接' }).fill(douyinVideo)
   await page.getByRole('button', { name: '解析视频' }).click()
 

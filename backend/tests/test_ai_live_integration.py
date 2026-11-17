@@ -79,6 +79,11 @@ async def test_live_ted_captions_to_summary(settings, tmp_path) -> None:
 def test_live_summary_api_from_ted(settings) -> None:
     app = create_app(settings=replace(settings, job_ttl_seconds=180))
     with TestClient(app) as client:
+        registered = client.post(
+            "/api/auth/register",
+            json={"username": "live_reader", "password": "safe-pass-123"},
+        )
+        assert registered.status_code == 201
         created = client.post(
             "/api/ai-summaries",
             json={

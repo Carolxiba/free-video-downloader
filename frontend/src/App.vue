@@ -8,6 +8,7 @@ import {
   Film,
   Link2,
   LoaderCircle,
+  LogOut,
   MonitorDown,
   RefreshCw,
   ShieldCheck,
@@ -32,6 +33,15 @@ import {
 } from './formatters'
 import type { DownloadJob, Preset, VideoInfo, ViewPhase } from './types'
 import VideoSummaryLauncher from './components/VideoSummaryLauncher.vue'
+import type { AuthUser } from './auth-types'
+
+defineProps<{
+  user?: AuthUser | null
+}>()
+
+const emit = defineEmits<{
+  logout: []
+}>()
 
 const url = ref('')
 const phase = ref<ViewPhase>('idle')
@@ -261,7 +271,17 @@ onBeforeUnmount(() => {
         <span class="brand-beta">SHIZHEN</span>
       </a>
 
-      <span class="free-pill"><span></span>免费 · 无需登录</span>
+      <div v-if="user" class="user-session">
+        <span class="user-avatar">{{ user.username.slice(0, 1).toUpperCase() }}</span>
+        <span class="user-copy">
+          <small>已登录</small>
+          <strong>{{ user.username }}</strong>
+        </span>
+        <button type="button" aria-label="退出登录" title="退出登录" @click="emit('logout')">
+          <LogOut :size="16" />
+        </button>
+      </div>
+      <span v-else class="free-pill"><span></span>账号登录</span>
     </header>
 
     <main id="top">
@@ -486,7 +506,7 @@ onBeforeUnmount(() => {
               </div>
 
               <div v-else class="empty-state">
-                <span>支持公开、非 DRM、无需登录的视频页面</span>
+                <span>登录后处理公开、非 DRM 的视频页面</span>
                 <div class="empty-line"></div>
                 <span>文件生成后保留 30 分钟</span>
               </div>

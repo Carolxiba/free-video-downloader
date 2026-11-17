@@ -25,6 +25,7 @@ TERMINAL_STATUSES = {
 @dataclass(slots=True)
 class JobRecord:
     job_id: str
+    user_id: str
     request: DownloadRequest
     video: VideoInfo
     directory: Path
@@ -75,12 +76,14 @@ class JobManager:
         self,
         request: DownloadRequest,
         video: VideoInfo,
+        user_id: str = "anonymous",
     ) -> JobView:
         now = time.time()
         job_id = uuid.uuid4().hex
         directory = self.settings.media_root / job_id
         record = JobRecord(
             job_id=job_id,
+            user_id=user_id,
             request=request,
             video=video,
             directory=directory,
@@ -92,10 +95,10 @@ class JobManager:
         record.task = asyncio.create_task(self._run(record), name=f"download-{job_id}")
         return record.to_view()
 
-    async def get(self, job_id: str) -> JobRecord | None:
+    async def get(self, job_id: str, user_id: str | None = None) -> JobRecord | None:
         async with self._lock:
             record = self._jobs.get(job_id)
-            if record is None:
+            if record is None or (user_id is not None and record.user_id != user_id):
                 return None
             if record.status not in TERMINAL_STATUSES and record.expires_at <= time.time():
                 await self._cancel_record(record)
@@ -103,10 +106,10 @@ class JobManager:
                 record.error = "任务已过期，请重新解析"
             return record
 
-    async def cancel(self, job_id: str) -> JobRecord | None:
+    async def cancel(self, job_id: str, user_id: str | None = None) -> JobRecord | None:
         async with self._lock:
             record = self._jobs.get(job_id)
-            if record is None:
+            if record is None or (user_id is not None and record.user_id != user_id):
                 return None
             if record.status not in TERMINAL_STATUSES:
                 await self._cancel_record(record)

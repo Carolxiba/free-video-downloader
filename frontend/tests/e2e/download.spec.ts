@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { mockAuthenticatedUser } from './auth-helper'
 
 const publicVideo = 'https://media.w3.org/2010/05/sintel/trailer.mp4'
 
@@ -87,6 +88,7 @@ test.describe('浏览器下载闭环', () => {
 
       await route.fulfill({ status: 404, body: '{}' })
     })
+    await mockAuthenticatedUser(page)
 
     await page.goto('/')
     await page.getByRole('textbox', { name: '视频链接' }).fill(publicVideo)
@@ -110,6 +112,7 @@ test.describe('浏览器下载闭环', () => {
   })
 
   test('非法链接有清晰错误提示', async ({ page }) => {
+    await mockAuthenticatedUser(page)
     await page.goto('/')
     await page.getByRole('textbox', { name: '视频链接' }).fill('这不是链接')
     await page.getByRole('button', { name: '解析视频' }).click()

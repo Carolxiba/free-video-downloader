@@ -1,7 +1,7 @@
 import '@fontsource-variable/noto-sans-sc'
 import { createApp } from 'vue'
-import App from './App.vue'
+import RootView from './RootView.vue'
 import './styles.css'
 
-createApp(App).mount('#app')
+createApp(RootView).mount('#app')
 

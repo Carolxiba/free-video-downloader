@@ -35,6 +35,13 @@ def _find_ffmpeg(configured_dir: Path) -> Path | None:
     return Path(found) if found else None
 
 
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 @dataclass(frozen=True, slots=True)
 class Settings:
     project_root: Path = PROJECT_ROOT
@@ -58,6 +65,11 @@ class Settings:
     download_concurrency: int = 1
     inspect_rate_limit: int = 5
     inspect_rate_window_seconds: int = 60
+    auth_db_path: Path = Path(
+        os.getenv("FZ_AUTH_DB_PATH", str(PROJECT_ROOT / ".runtime" / "auth.db"))
+    )
+    auth_session_ttl_seconds: int = _env_int("FZ_AUTH_SESSION_TTL_SECONDS", 604_800)
+    auth_cookie_secure: bool = _env_bool("FZ_AUTH_COOKIE_SECURE", False)
 
     @property
     def frontend_dist(self) -> Path:

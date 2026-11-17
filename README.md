@@ -1,14 +1,14 @@
 # 拾帧
 
-拾帧是一个基于 Vue 3、FastAPI 和 yt-dlp 的公开视频下载工具。粘贴链接、解析视频信息、选择画质，即可把文件保存到电脑或手机。
+拾帧是一个基于 Vue 3、FastAPI 和 yt-dlp 的公开视频下载与内容摘要工具。用户注册并登录后，可以粘贴链接、解析视频信息、选择画质，或生成带时间戳的学习摘要。
 
-首版只处理单个公开视频链接，不支持由用户提供登录 Cookie、DRM、播放列表、账号、付费或 AI 功能。抖音解析会在服务端自动创建短期匿名访问会话。
+当前支持单账号登录、单视频下载和 AI 摘要，不接收用户提供的来源站点 Cookie，也不处理 DRM 或播放列表。抖音解析会在服务端自动创建短期匿名访问会话。
 
 ## 项目结构
 
 ```text
 .
-├── backend/       # FastAPI、任务状态机与 yt-dlp 封装
+├── backend/       # FastAPI、账号会话、任务状态机与 yt-dlp 封装
 ├── frontend/      # Vue 3 页面、组件测试与浏览器验收
 ├── docs/          # 测试与验收记录
 └── scripts/       # Windows 开发环境辅助脚本
@@ -70,6 +70,9 @@ uv run uvicorn app.main:app --port 8000
 | `FZ_MAX_FILE_BYTES` | `1610612736` | 单个输出文件最大字节数 |
 | `FZ_DOWNLOAD_TIMEOUT_SECONDS` | `900` | 下载任务超时秒数 |
 | `FZ_YTDLP_PROXY` | 空 | yt-dlp 可选的 HTTP(S) 出口代理 |
+| `FZ_AUTH_DB_PATH` | `.runtime/auth.db` | 用户与服务端会话数据库 |
+| `FZ_AUTH_SESSION_TTL_SECONDS` | `604800` | 登录会话有效期，默认 7 天 |
+| `FZ_AUTH_COOKIE_SECURE` | `false` | 生产 HTTPS 环境应设为 `true` |
 
 ## 测试
 
@@ -108,7 +111,7 @@ npx playwright test tests/e2e/douyin-live.spec.ts --project=desktop-chromium
 - 本项目只通过子进程封装 yt-dlp，不修改或复制其源码。
 - 支持范围由当前 yt-dlp 提取器决定，不保证任意平台或任意链接都能成功。
 - 请只下载本人拥有或已获授权的公开内容，并遵守来源平台条款。
-- 当前只允许公开、非 DRM、无需登录的网页地址，不处理播放列表和直播。
+- 当前只允许公开、非 DRM、无需来源站点登录的网页地址，不处理播放列表和直播。
 
 详细依赖说明和验收结果见 [docs/verification.md](docs/verification.md)。
 

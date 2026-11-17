@@ -161,3 +161,21 @@ async def test_summary_manager_can_cancel_running_job(settings, tmp_path) -> Non
     finally:
         fetcher.release.set()
         await manager.shutdown()
+
+
+@pytest.mark.asyncio
+async def test_summary_jobs_are_isolated_by_user(settings, tmp_path) -> None:
+    manager = SummaryManager(
+        settings,
+        SummaryConfig(api_key="test-key", root=tmp_path / "summaries"),
+        caption_fetcher=FakeCaptionFetcher(),  # type: ignore[arg-type]
+        deepseek_client=FakeDeepSeekClient(),  # type: ignore[arg-type]
+    )
+    try:
+        created = await manager.create("https://8.8.8.8/video", "user-one")
+        await wait_for_status(manager, created.job_id, SummaryStatus.READY)
+        assert await manager.get(created.job_id, "user-one") is not None
+        assert await manager.get(created.job_id, "user-two") is None
+        assert await manager.cancel(created.job_id, "user-two") is None
+    finally:
+        await manager.shutdown()

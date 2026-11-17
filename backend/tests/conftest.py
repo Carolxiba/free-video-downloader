@@ -18,5 +18,8 @@ def settings(tmp_path: Path) -> Settings:
         download_timeout_seconds=30,
         inspect_timeout_seconds=5,
         proxy_url=None,
+        auth_db_path=tmp_path / "auth.db",
+        auth_session_ttl_seconds=3600,
+        auth_cookie_secure=False,
     )
 

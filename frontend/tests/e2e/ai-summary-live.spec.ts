@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { registerWithRealBackend } from './auth-helper'
 
 test('真实字幕与 DeepSeek 生成 AI 摘要', async ({ page }, testInfo) => {
   test.skip(
@@ -7,7 +8,7 @@ test('真实字幕与 DeepSeek 生成 AI 摘要', async ({ page }, testInfo) => 
   )
   test.skip(testInfo.project.name !== 'desktop-chromium')
 
-  await page.goto('/')
+  await registerWithRealBackend(page)
   await page
     .getByRole('textbox', { name: '视频链接' })
     .fill('https://www.ted.com/talks/laura_trice_remember_to_say_thank_you')

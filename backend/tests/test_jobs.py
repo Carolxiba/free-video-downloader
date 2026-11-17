@@ -131,3 +131,18 @@ async def test_cleanup_removes_expired_task_directory(settings: Settings) -> Non
     finally:
         await manager.shutdown()
 
+
+@pytest.mark.asyncio
+async def test_download_jobs_are_isolated_by_user(settings: Settings) -> None:
+    runner = ControlledRunner()
+    runner.release.set()
+    manager = JobManager(settings, runner)  # type: ignore[arg-type]
+    try:
+        created = await manager.create(request(), video(), "user-one")
+        await wait_for(lambda: manager._jobs[created.job_id].status == JobStatus.READY)
+        assert await manager.get(created.job_id, "user-one") is not None
+        assert await manager.get(created.job_id, "user-two") is None
+        assert await manager.cancel(created.job_id, "user-two") is None
+    finally:
+        await manager.shutdown()
+
